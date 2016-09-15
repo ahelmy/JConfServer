@@ -1,0 +1,2 @@
+# JConfServer
+Java Configuration Server
