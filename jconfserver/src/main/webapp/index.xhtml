@@ -1,0 +1,36 @@
+<ui:composition template="/WEB-INF/template/MasterPage.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="title">
+       JConfServer
+    </ui:define>
+	<ui:define name="content">
+		<h:form prependId="false" id="form">
+			<p:growl id="messages" showSummary="false" showDetail="true"
+				autoUpdate="true" life="3000" />
+			<p:panel header="Login">
+				<h:panelGrid columns="2">
+					<h:outputLabel value="Username"></h:outputLabel>
+					<p:inputText>
+					</p:inputText>
+					<h:outputLabel value="Password"></h:outputLabel>
+					<p:password></p:password>
+					<p:spacer width="10"></p:spacer>
+					<p:commandButton value="Login">
+					</p:commandButton>
+				</h:panelGrid>
+			</p:panel>
+			<p:separator />
+			<p:spacer height="10" />
+			<h:panelGroup id="errorBox" layout="block">
+				<h:panelGroup id="errorMessage" rendered="#{false}">
+					<h:panelGroup style="color:red;"></h:panelGroup>
+				</h:panelGroup>
+			</h:panelGroup>
+		</h:form>
+	</ui:define>
+</ui:composition>
