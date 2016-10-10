@@ -28,19 +28,21 @@ public class PropertyAdapter implements JsonSerializer<Property> {
 	 */
 	@Override
 	public JsonElement serialize(Property prop, Type typeOfSrc, JsonSerializationContext context) {
-		
+
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.addProperty("id", prop.getId());
 		jsonObject.addProperty("name", prop.getName());
 		jsonObject.addProperty("value", prop.getValue());
 		jsonObject.addProperty("updateEveryMin", prop.getUpdateEveryMin());// updateEveryMin
 		jsonObject.addProperty("description", prop.getDescription());
-		if (prop.getDbconnection() != null) {
-			//jsonObject.addProperty("dbconnection", prop.getDbconnection().toString());
-			jsonObject.add("dbconnection", new DBConnectionAdapter().serialize(prop.getDbconnection(), DBConnection.class, context));
-		}
 		if (prop.getProject() != null) {
-			jsonObject.add("project",new ProjectAdapter().serialize(prop.getProject(), Project.class, context));
+			jsonObject.add("project", new ProjectAdapter().serialize(prop.getProject(), Project.class, context));
+		}
+		if (prop.getDbconnection() != null) {
+			// jsonObject.addProperty("dbconnection",
+			// prop.getDbconnection().toString());
+			jsonObject.add("dbconnection",
+					new DBConnectionAdapter().serialize(prop.getDbconnection(), DBConnection.class, context));
 		}
 		return jsonObject;
 	}

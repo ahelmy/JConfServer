@@ -3,14 +3,23 @@ package outsidethebox.java.hibernate.models;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
+import outsidethebox.java.hibernate.models.jsonadapter.ProjectAdapter;
 import outsidethebox.java.hibernate.models.jsonadapter.PropertyAdapter;
 
 /**
@@ -19,11 +28,11 @@ import outsidethebox.java.hibernate.models.jsonadapter.PropertyAdapter;
  */
 @Entity
 @NamedQuery(name = "Property.findAll", query = "SELECT p FROM Property p")
-public class Property implements Serializable, JsonSerializer<Property> {
+public class Property extends Model implements Serializable, JsonSerializer<Property> {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID")
 	private int id;
 
@@ -108,14 +117,26 @@ public class Property implements Serializable, JsonSerializer<Property> {
 		this.project = project;
 	}
 
+	public boolean validPOST() {
+		return name != null && name.length() > 0 && value != null && value.length() > 0 && project != null
+				&& project.getName() != null && project.getName().length() > 0;
+	}
+
 	@Override
 	public JsonElement serialize(Property src, Type typeOfSrc, JsonSerializationContext context) {
 		return new PropertyAdapter().serialize(src, typeOfSrc, context);
 	}
+
+	public JsonObject toJSON() {
+		return new GsonBuilder().setPrettyPrinting().registerTypeAdapter(getClass(), new PropertyAdapter()).create()
+				.toJsonTree(this).getAsJsonObject();
+	}
+
 	
 	@Override
 	public String toString() {
-		Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(getClass(), new PropertyAdapter()).create();
+		Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(getClass(), new PropertyAdapter())
+				.create();
 		return gson.toJson(this);
 	}
 

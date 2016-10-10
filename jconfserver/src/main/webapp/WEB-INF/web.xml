@@ -37,6 +37,11 @@
 		
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	<listener>  
+    	<listener-class>
+        outsidethebox.java.servlet.ConfigurationServletListener
+    	</listener-class>
+	</listener>  
 	<servlet-mapping>
 		<servlet-name>jersey-serlvet</servlet-name>
 		<url-pattern>/rest/*</url-pattern>

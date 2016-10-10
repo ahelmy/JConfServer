@@ -2,8 +2,18 @@ package outsidethebox.java.hibernate.models;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -12,48 +22,48 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import outsidethebox.java.hibernate.models.jsonadapter.DBConnectionAdapter;
-import outsidethebox.java.hibernate.models.jsonadapter.PropertyAdapter;
-
-import java.util.List;
-
 
 /**
  * The persistent class for the DBConnection database table.
  * 
  */
 @Entity
-@NamedQuery(name="DBConnection.findAll", query="SELECT d FROM DBConnection d")
+@NamedQuery(name = "DBConnection.findAll", query = "SELECT d FROM DBConnection d")
 public class DBConnection implements Serializable, JsonSerializer<DBConnection> {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="ID")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "ID")
 	private int id;
 
-	@Column(name="ConnectionID")
+	@Column(name = "ConnectionID")
 	private String connectionID;
 
-	@Column(name="Description")
+	@Column(name = "Description")
 	private String description;
 
-	@Column(name="Driver")
+	@Column(name = "Driver")
 	private String driver;
 
-	@Column(name="Password")
+	@Column(name = "Password")
 	private String password;
 
-	@Column(name="URL")
+	@Column(name = "URL")
 	private String url;
 
-	@Column(name="Username")
+	@Column(name = "Username")
 	private String username;
 
-	//bi-directional many-to-one association to Property
-	@OneToMany(mappedBy="dbconnection")
+	// bi-directional many-to-one association to Property
+	@OneToMany(mappedBy = "dbconnection")
 	private List<Property> properties;
 
 	public DBConnection() {
+	}
+
+	public DBConnection(int id) {
+		this.id = id;
 	}
 
 	public int getId() {
@@ -135,14 +145,31 @@ public class DBConnection implements Serializable, JsonSerializer<DBConnection> 
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof DBConnection && ((DBConnection) obj).connectionID.equals(this.connectionID));
+	}
+
+	@Override
+	public int hashCode() {
+		return this.connectionID.hashCode();
+	}
+
+	@Override
 	public JsonElement serialize(DBConnection src, Type typeOfSrc, JsonSerializationContext context) {
 		return new DBConnectionAdapter().serialize(src, typeOfSrc, context);
 	}
-	
+
 	@Override
 	public String toString() {
-		Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(getClass(), new DBConnectionAdapter()).create();
+		Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(getClass(), new DBConnectionAdapter())
+				.create();
 		return gson.toJson(this);
+	}
+
+	public boolean validPOST() {
+		return connectionID != null && connectionID.length() > 0 && driver != null && driver.length() > 0
+				&& username != null && username.length() > 0 && password != null && password.length() > 0 && url != null
+				&& url.length() > 0;
 	}
 
 }

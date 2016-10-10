@@ -13,13 +13,15 @@ import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-import outsidethebox.java.hibernate.models.jsonadapter.DBConnectionAdapter;
 import outsidethebox.java.hibernate.models.jsonadapter.ProjectAdapter;
 
 /**
@@ -44,11 +46,16 @@ public class Project implements Serializable, JsonSerializer<Project> {
 
 	// bi-directional many-to-one association to Property
 	@OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+	@Cascade({ CascadeType.DELETE, CascadeType.MERGE})
 	private List<Property> properties;
 
 	public Project() {
 	}
 
+	public Project(int id){
+		this.id = id;
+	}
+	
 	public int getId() {
 		return this.id;
 	}
@@ -108,6 +115,21 @@ public class Project implements Serializable, JsonSerializer<Project> {
 	@Override
 	public JsonElement serialize(Project src, Type typeOfSrc, JsonSerializationContext context) {
 		return new ProjectAdapter().serialize(src, typeOfSrc, context);
+	}
+
+	public boolean validPOST() {
+		return name != null && name.length() > 0;
+	}
+
+	public String toDetailedString() {
+		Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(getClass(), new ProjectAdapter(true))
+				.create();
+		return gson.toJson(this);
+	}
+
+	public JsonElement toDetailedJSON() {
+		return new GsonBuilder().setPrettyPrinting().registerTypeAdapter(getClass(), new ProjectAdapter(true)).create()
+				.toJsonTree(this);
 	}
 
 	@Override
